@@ -31,8 +31,8 @@
 }
 
 - (void)didDisplayAd:(nonnull MAAd *)ad {
+    [self.customEventShowDelegate customEventDidPresentModal:VRTModalTypeInterstitial];
     [self.customEventShowDelegate customEventShown];
-    
 }
 
 - (void)didFailToDisplayAd:(nonnull MAAd *)ad withError:(nonnull MAError *)error {
