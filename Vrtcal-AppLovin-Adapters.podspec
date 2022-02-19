@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = "Vrtcal-AppLovin-Adapters"
-    s.version      = "1.0.1"
+    s.version      = "1.0.2"
     s.summary      = "Allows mediation with Vrtcal as either the primary or secondary SDK"
     s.homepage     = "http://vrtcal.com"
     s.license = { :type => 'Copyright', :text => <<-LICENSE
@@ -19,4 +19,10 @@ Pod::Spec.new do |s|
     s.dependency 'VrtcalSDK'
 
     s.static_framework = true
+    s.pod_target_xcconfig = { 
+        "OTHER_LDFLAGS" => "-ObjC",
+        "VALID_ARCHS" => "i386 x86_64 armv7 arm64",
+        "VALID_ARCHS[sdk=iphoneos*]" => "arm64 arm64e armv7 armv7s",
+        "VALID_ARCHS[sdk=iphonesimulator*]" => "x86_64"
+    }
 end
