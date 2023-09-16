@@ -1,180 +1,189 @@
-//  Converted to Swift 5.8.1 by Swiftify v5.8.26605 - https://swiftify.com/
 import AppLovinSDK
+import VrtcalSDK
 
 // Initialization configuration keys
 private let keyAppId = "app_id"
 typealias VRTAdapterInitializationCompletionHandler = (MAAdapterInitializationStatus, String?) -> Void
 
-class VRTMediationAdapter: ALMediationAdapter, MAAdViewAdapter, VrtcalSdkDelegate, VRTBannerDelegate, MAInterstitialAdapter, VRTInterstitialDelegate {
+class VRTMediationAdapter: ALMediationAdapter {
     private var completionHandler: VRTAdapterInitializationCompletionHandler?
     private var vrtBanner: VRTBanner?
     private var bannerDelegate: MAAdViewAdapterDelegate?
     private var vrtInterstitial: VRTInterstitial?
     private var interstitialDelegate: MAInterstitialAdapterDelegate?
 
-    // MARK: - ALMediationAdapter
-
-    func initialize(with parameters: MAAdapterInitializationParameters, withCompletionHandler completionHandler: @escaping () -> Void) {
-        VRTLogWhereAmI()
+    override func initialize(with parameters: MAAdapterInitializationParameters, withCompletionHandler completionHandler: @escaping () -> Void) {
+        VRTLogInfo()
     }
-
-    func initialize(with parameters: MAAdapterInitializationParameters?, completionHandler: @escaping (_ initializationStatus: MAAdapterInitializationStatus, _ errorMessage: String?) -> Void) {
-
-        VRTLogWhereAmI()
+    
+    override func initialize(
+        with parameters: MAAdapterInitializationParameters?,
+        completionHandler: @escaping (_ initializationStatus: MAAdapterInitializationStatus, _ errorMessage: String?) -> Void
+    ) {
+        
+        VRTLogInfo()
         self.completionHandler = completionHandler
-
-        let strAppId = parameters?.serverParameters[keyAppId] as? String
-        if strAppId == nil || !(strAppId is NSString) {
-            self.completionHandler(MAAdapterInitializationStatusInitializedFailure, "Unable to extract appId")
+        
+        guard let strAppId = parameters?.serverParameters[keyAppId] as? String,
+        let appId = Int(strAppId) else {
+            self.completionHandler?(.initializedFailure, "Unable to extract appId")
             return
         }
-
-        let appId = Int(strAppId ?? "") ?? 0
+        
         DispatchQueue.main.async(execute: { [self] in
             VrtcalSDK.initializeSdk(withAppId: appId, sdkDelegate: self)
-            self.completionHandler(MAAdapterInitializationStatusInitializing, nil)
+            self.completionHandler?(.initializing, nil)
         })
     }
+}
 
+extension VRTMediationAdapter: VrtcalSdkDelegate {
     func sdkInitializationFailedWithError(_ error: Error) {
-        VRTLogWhereAmI()
-        completionHandler?(MAAdapterInitializationStatusInitializedFailure, error.description())
+        VRTLogInfo()
+        completionHandler?(.initializedFailure, "\(error)")
     }
 
     func sdkInitialized() {
-        VRTLogWhereAmI()
-        completionHandler?(MAAdapterInitializationStatusInitializedSuccess, nil)
+        VRTLogInfo()
+        completionHandler?(.initializedSuccess, nil)
     }
+}
 
-    func destroy() {
-        VRTLogWhereAmI()
-    }
 
+extension VRTMediationAdapter: MAAdViewAdapter {
     // MARK: - MAAdViewAdapter
-
     func loadAdViewAd(for parameters: MAAdapterResponseParameters, adFormat: MAAdFormat, andNotify delegate: MAAdViewAdapterDelegate) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         bannerDelegate = delegate
-
-
-        let zoneId = parameters.thirdPartyAdPlacementIdentifier.intValue
-        if zoneId <= 0 {
-            let message = "Could not extract zoneId from parameters: \(parameters)"
-            let error = MAAdapterError(code: MAAdapterError.errorCodeInvalidConfiguration, errorString: message)
+        
+        
+        guard let zoneId = Int(parameters.thirdPartyAdPlacementIdentifier),
+        zoneId > 0 else {
+            let message = "Could not extract thirdPartyAdPlacementIdentifier (zoneId) from parameters: \(parameters)"
+            
+            let error = MAAdapterError(
+                code: MAAdapterError.errorCodeInvalidConfiguration,
+                errorString: message
+            )
             bannerDelegate?.didFailToLoadAdViewAdWithError(error)
             return
         }
-
+        
         vrtBanner = VRTBanner(frame: CGRect(x: 0, y: 0, width: adFormat.size.width, height: adFormat.size.height))
         vrtBanner?.adDelegate = self
         vrtBanner?.loadAd(zoneId)
     }
+}
 
-    // MARK: - VRTBannerDelegate
+
+// MARK: - VRTBannerDelegate
+extension VRTMediationAdapter: VRTBannerDelegate {
 
     func vrtBannerAdClicked(_ vrtBanner: VRTBanner) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         bannerDelegate?.didClickAdViewAd()
     }
-
-    func vrtBannerAdFailed(toLoad vrtBanner: VRTBanner, error: Error) {
-        VRTLogWhereAmI()
+    
+    func vrtBannerAdFailedToLoad(_ vrtBanner: VRTBanner, error: Error) {
+        VRTLogInfo()
         bannerDelegate?.didFailToLoadAdViewAdWithError(MAAdapterError(nsError: error))
     }
-
+    
     func vrtBannerAdLoaded(_ vrtBanner: VRTBanner, withAdSize adSize: CGSize) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         bannerDelegate?.didLoadAd(forAdView: vrtBanner)
     }
-
+    
     func vrtBannerAdWillLeaveApplication(_ vrtBanner: VRTBanner) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         // No Analog
     }
-
+    
     func vrtBannerDidDismissModal(_ vrtBanner: VRTBanner, of modalType: VRTModalType) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         bannerDelegate?.didCollapseAdViewAd()
     }
-
+    
     func vrtBannerDidPresentModal(_ vrtBanner: VRTBanner, of modalType: VRTModalType) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         bannerDelegate?.didExpandAdViewAd()
     }
-
+    
     func vrtBannerVideoCompleted(_ vrtBanner: VRTBanner) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         // No Analog
     }
-
+    
     func vrtBannerVideoStarted(_ vrtBanner: VRTBanner) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         // No Analog
     }
-
+    
     func vrtBannerWillDismissModal(_ vrtBanner: VRTBanner, of modalType: VRTModalType) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         // No Analog
     }
-
+    
     func vrtBannerWillPresentModal(_ vrtBanner: VRTBanner, of modalType: VRTModalType) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         // No Analog
     }
-
-    func vrtViewControllerForModalPresentation() -> UIViewController {
+    
+    func vrtViewControllerForModalPresentation() -> UIViewController? {
         return ALUtils.topViewControllerFromKeyWindow()
     }
+}
 
-    // MARK: - MAInterstitialAdapter
-
+// MARK: - MAInterstitialAdapter
+extension VRTMediationAdapter: MAInterstitialAdapter {
     func loadInterstitialAd(for parameters: MAAdapterResponseParameters, andNotify delegate: MAInterstitialAdapterDelegate) {
-        VRTLogWhereAmI()
-
+        VRTLogInfo()
+        
         interstitialDelegate = delegate
-
-        let zoneId = parameters.thirdPartyAdPlacementIdentifier.intValue
-        if zoneId <= 0 {
-            let message = "Could not extract zoneId from parameters: \(parameters)"
+        
+        guard let zoneId = Int(parameters.thirdPartyAdPlacementIdentifier),
+        zoneId > 0 else {
+            let message = "Could not extract thirdPartyAdPlacementIdentifier (zoneId) from parameters: \(parameters)"
             let error = MAAdapterError(code: MAAdapterError.errorCodeInvalidConfiguration, errorString: message)
             bannerDelegate?.didFailToLoadAdViewAdWithError(error)
             return
         }
-
+        
         vrtInterstitial = VRTInterstitial()
         vrtInterstitial?.adDelegate = self
         vrtInterstitial?.loadAd(zoneId)
     }
-
+    
     func showInterstitialAd(for parameters: MAAdapterResponseParameters, andNotify delegate: MAInterstitialAdapterDelegate) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         vrtInterstitial?.showAd()
     }
+}
 
-    // MARK: - VRTInterstitialDelegate
-
+// MARK: - VRTInterstitialDelegate
+extension VRTMediationAdapter: VRTInterstitialDelegate {
     func vrtInterstitialAdClicked(_ vrtInterstitial: VRTInterstitial) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         interstitialDelegate?.didClickInterstitialAd()
     }
 
     func vrtInterstitialAdDidDismiss(_ vrtInterstitial: VRTInterstitial) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         interstitialDelegate?.didHideInterstitialAd()
     }
 
     func vrtInterstitialAdDidShow(_ vrtInterstitial: VRTInterstitial) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         interstitialDelegate?.didDisplayInterstitialAd()
     }
 
     func vrtInterstitialAdFailed(toLoad vrtInterstitial: VRTInterstitial, error: Error) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         interstitialDelegate?.didFailToLoadInterstitialAdWithError(MAAdapterError(nsError: error))
     }
 
     func vrtInterstitialAdFailed(toShow vrtInterstitial: VRTInterstitial, error: Error) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         interstitialDelegate?.didFailToDisplayInterstitialAdWithError(MAAdapterError(nsError: error))
     }
 
@@ -183,27 +192,27 @@ class VRTMediationAdapter: ALMediationAdapter, MAAdViewAdapter, VrtcalSdkDelegat
     }
 
     func vrtInterstitialAdWillDismiss(_ vrtInterstitial: VRTInterstitial) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         // No Analog
     }
 
     func vrtInterstitialAdWillLeaveApplication(_ vrtInterstitial: VRTInterstitial) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         // No Analog
     }
 
     func vrtInterstitialAdWillShow(_ vrtInterstitial: VRTInterstitial) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         // No Analog
     }
 
     func vrtInterstitialVideoCompleted(_ vrtInterstitial: VRTInterstitial) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         // No Analog
     }
 
     func vrtInterstitialVideoStarted(_ vrtInterstitial: VRTInterstitial) {
-        VRTLogWhereAmI()
+        VRTLogInfo()
         // No Analog
     }
 }

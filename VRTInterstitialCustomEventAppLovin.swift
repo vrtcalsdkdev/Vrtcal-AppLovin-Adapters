@@ -1,58 +1,39 @@
-//  Converted to Swift 5.8.1 by Swiftify v5.8.26605 - https://swiftify.com/
+
 import AppLovinSDK
 import VrtcalSDK
 
 //AppLovin Interstitial Adapter, Vrtcal as Primary
 
-class VRTInterstitialCustomEventAppLovin: VRTAbstractInterstitialCustomEvent, MAAdDelegate {
+class VRTInterstitialCustomEventAppLovin: VRTAbstractInterstitialCustomEvent {
     private var maIntersatitialAd: MAInterstitialAd?
-
-    func loadInterstitialAd() {
-        VRTLogWhereAmI()
-        let maAdUnitId = customEventConfig.thirdPartyCustomEventData["adUnitId"] as? String
+    private var maadDelegatePassthrough = MAAdDelegatePassthrough()
+    
+    override func loadInterstitialAd() {
+        VRTLogInfo()
+        
+        
+        let dict = customEventConfig.thirdPartyCustomEventData
+        guard let maAdUnitId = dict["adUnitId"] as? String else {
+            customEventLoadDelegate?.customEventFailedToLoad(
+                vrtError: VRTError(
+                    vrtErrorCode: .customEvent,
+                    message: "Unable to extract adUnitId: \(dict)"
+                )
+            )
+            return
+        }
+        
         maIntersatitialAd = MAInterstitialAd(adUnitIdentifier: maAdUnitId)
-        maIntersatitialAd?.delegate = self
+        
+        maadDelegatePassthrough.customEventLoadDelegate = customEventLoadDelegate
+        maadDelegatePassthrough.customEventShowDelegate = customEventShowDelegate
+        
+        maIntersatitialAd?.delegate = maadDelegatePassthrough
         maIntersatitialAd?.load()
     }
 
-    func showInterstitialAd() {
-        VRTLogWhereAmI()
+    override func showInterstitialAd() {
+        VRTLogInfo()
         maIntersatitialAd?.show()
     }
-
-    // MARK: - MAAdDelegate
-
-    func didLoad(_ ad: MAAd?) {
-        VRTLogWhereAmI()
-        customEventLoadDelegate.customEventLoaded()
-    }
-
-    func didClick(_ ad: MAAd) {
-        VRTLogWhereAmI()
-        customEventShowDelegate.customEventClicked()
-    }
-
-    func didDisplay(_ ad: MAAd) {
-        VRTLogWhereAmI()
-        customEventShowDelegate.customEventDidPresentModal(VRTModalTypeInterstitial)
-        customEventShowDelegate.customEventShown()
-    }
-
-    func didFail(toDisplay ad: MAAd, withError error: MAError) {
-        // No Analog
-        VRTLogWhereAmI()
-    }
-
-    func didFailToLoadAd(forAdUnitIdentifier adUnitIdentifier: String, withError error: MAError) {
-        VRTLogWhereAmI()
-        let vrtError = VRTError(code: VRTErrorCodeCustomEvent, message: error.message)
-        customEventLoadDelegate.customEventFailedToLoadWithError(vrtError)
-    }
-
-    func didHide(_ ad: MAAd) {
-        VRTLogWhereAmI()
-        customEventShowDelegate.customEventDidDismissModal(VRTModalTypeUnknown)
-    }
 }
-
-//AppLovin Interstitial Adapter, Vrtcal as Primary
