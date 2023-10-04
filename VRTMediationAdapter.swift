@@ -13,6 +13,12 @@ class VRTMediationAdapter: ALMediationAdapter {
     private var interstitialDelegate: MAInterstitialAdapterDelegate?
 
     override func initialize(with parameters: MAAdapterInitializationParameters, withCompletionHandler completionHandler: @escaping () -> Void) {
+        /*
+         Note:
+         This should be called when AppLovin initializes, but will not run when on simulator.
+         Also, use ALSdk.shared()!.showMediationDebugger() to determine if Vrtcal is in the
+         waterfall. Make sure to look for ❌ icons. May need to update SKAdNetworks.
+        */
         VRTLogInfo()
     }
     

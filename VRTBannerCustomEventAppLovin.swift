@@ -34,7 +34,6 @@ class VRTBannerCustomEventAppLovin: VRTAbstractBannerCustomEvent {
         maAdView?.frame = CGRect(x: 0, y: 0, width: width, height: height)
         
         maaAdViewAdDelegatePassthrough.customEventLoadDelegate = customEventLoadDelegate
-        maaAdViewAdDelegatePassthrough.customEventShowDelegate = customEventShowDelegate
         
         maAdView?.delegate = maaAdViewAdDelegatePassthrough
         maAdView?.loadAd()
@@ -42,6 +41,7 @@ class VRTBannerCustomEventAppLovin: VRTAbstractBannerCustomEvent {
 
     override func getView() -> UIView? {
         VRTLogInfo()
+        maaAdViewAdDelegatePassthrough.customEventShowDelegate = customEventShowDelegate
         return maAdView
     }
 }

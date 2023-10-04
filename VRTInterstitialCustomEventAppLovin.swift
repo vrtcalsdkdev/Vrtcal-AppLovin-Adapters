@@ -26,7 +26,6 @@ class VRTInterstitialCustomEventAppLovin: VRTAbstractInterstitialCustomEvent {
         maIntersatitialAd = MAInterstitialAd(adUnitIdentifier: maAdUnitId)
         
         maadDelegatePassthrough.customEventLoadDelegate = customEventLoadDelegate
-        maadDelegatePassthrough.customEventShowDelegate = customEventShowDelegate
         
         maIntersatitialAd?.delegate = maadDelegatePassthrough
         maIntersatitialAd?.load()
@@ -34,6 +33,7 @@ class VRTInterstitialCustomEventAppLovin: VRTAbstractInterstitialCustomEvent {
 
     override func showInterstitialAd() {
         VRTLogInfo()
+        maadDelegatePassthrough.customEventShowDelegate = customEventShowDelegate
         maIntersatitialAd?.show()
     }
 }
