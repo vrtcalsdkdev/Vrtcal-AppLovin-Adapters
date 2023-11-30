@@ -18,17 +18,13 @@ class VRTBannerCustomEventAppLovin: VRTAbstractBannerCustomEvent {
             return
         }
                 
-        guard let width = customEventConfig.thirdPartyWidth(
+        let width = customEventConfig.thirdPartyWidth(
             customEventLoadDelegate: customEventLoadDelegate
-        ) else {
-            return
-        }
+        )
         
-        guard let height = customEventConfig.thirdPartyHeight(
+        let height = customEventConfig.thirdPartyHeight(
             customEventLoadDelegate: customEventLoadDelegate
-        ) else {
-            return
-        }
+        )
         
         maAdView = MAAdView(adUnitIdentifier: adUnitIdentifier)
         maAdView?.frame = CGRect(x: 0, y: 0, width: width, height: height)
