@@ -22,7 +22,7 @@ class VRTMediationAdapter: ALMediationAdapter {
          Also, use ALSdk.shared()!.showMediationDebugger() to determine if Vrtcal is in the
          waterfall. Make sure to look for ❌ icons. May need to update SKAdNetworks.
         */
-        VRTLogInfo()
+        VRTLogInfo("🎉🎉🎉")
     }
     
     override func initialize(
@@ -30,7 +30,7 @@ class VRTMediationAdapter: ALMediationAdapter {
         completionHandler: @escaping (_ initializationStatus: MAAdapterInitializationStatus, _ errorMessage: String?) -> Void
     ) {
         
-        VRTLogInfo()
+        VRTLogInfo("🎉🎉🎉")
         self.completionHandler = completionHandler
         
         guard let strAppId = parameters?.serverParameters[keyAppId] as? String,
