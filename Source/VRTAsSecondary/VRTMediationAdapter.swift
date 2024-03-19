@@ -12,7 +12,10 @@ class VRTMediationAdapter: ALMediationAdapter {
     private var vrtInterstitial: VRTInterstitial?
     private var interstitialDelegate: MAInterstitialAdapterDelegate?
 
-    override func initialize(with parameters: MAAdapterInitializationParameters, withCompletionHandler completionHandler: @escaping () -> Void) {
+    override func initialize(
+        with parameters: MAAdapterInitializationParameters,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
         /*
          Note:
          This should be called when AppLovin initializes, but will not run when on simulator.
