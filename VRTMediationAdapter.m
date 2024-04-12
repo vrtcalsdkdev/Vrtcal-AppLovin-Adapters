@@ -6,14 +6,12 @@ static NSString * const keyAppId = @"app_id";
 
 typedef void(^VRTAdapterInitializationCompletionHandler)(MAAdapterInitializationStatus initializationStatus, NSString *_Nullable errorMessage);
 
-@interface VRTMediationAdapter() <MAAdViewAdapter, VrtcalSdkDelegate, VRTBannerDelegate, MAInterstitialAdapter, VRTInterstitialDelegate>
+@interface VRTMediationAdapter() <MAAdViewAdapter, MAInterstitialAdapter>
 @property VRTAdapterInitializationCompletionHandler completionHandler;
 
 
-@property VRTBanner *vrtBanner;
 @property id <MAAdViewAdapterDelegate> bannerDelegate;
 
-@property VRTInterstitial *vrtInterstitial;
 @property id <MAInterstitialAdapterDelegate> interstitialDelegate;
 
 @end
@@ -28,7 +26,7 @@ typedef void(^VRTAdapterInitializationCompletionHandler)(MAAdapterInitialization
 
 - (void)initializeWithParameters:(id<MAAdapterInitializationParameters>)parameters completionHandler:(void(^)(MAAdapterInitializationStatus initializationStatus, NSString *_Nullable errorMessage))completionHandler {
     
-    VRTLogWhereAmI();
+    NSLog(@"initializeWithParameters");
     self.completionHandler = completionHandler;
     
     NSString *strAppId = parameters.serverParameters[keyAppId];
@@ -45,7 +43,7 @@ typedef void(^VRTAdapterInitializationCompletionHandler)(MAAdapterInitialization
 }
 
 - (void)sdkInitializationFailedWithError:(nonnull NSError *)error {
-    VRTLogWhereAmI();
+    NSLog(@"initializeWithParameters");
     self.completionHandler(MAAdapterInitializationStatusInitializedFailure, [error description]);
 }
 
@@ -80,60 +78,6 @@ typedef void(^VRTAdapterInitializationCompletionHandler)(MAAdapterInitialization
 }
 
 
-#pragma mark - VRTBannerDelegate
-- (void)vrtBannerAdClicked:(nonnull VRTBanner *)vrtBanner {
-    VRTLogWhereAmI();
-    [self.bannerDelegate didClickAdViewAd];
-}
-
-- (void)vrtBannerAdFailedToLoad:(nonnull VRTBanner *)vrtBanner error:(nonnull NSError *)error {
-    VRTLogWhereAmI();
-    [self.bannerDelegate didFailToLoadAdViewAdWithError:[MAAdapterError errorWithNSError:error]];
-}
-
-- (void)vrtBannerAdLoaded:(nonnull VRTBanner *)vrtBanner withAdSize:(CGSize)adSize {
-    VRTLogWhereAmI();
-    [self.bannerDelegate didLoadAdForAdView:vrtBanner];
-}
-
-- (void)vrtBannerAdWillLeaveApplication:(nonnull VRTBanner *)vrtBanner {
-    VRTLogWhereAmI();
-    // No Analog
-}
-
-- (void)vrtBannerDidDismissModal:(nonnull VRTBanner *)vrtBanner ofType:(VRTModalType)modalType {
-    VRTLogWhereAmI();
-    [self.bannerDelegate didCollapseAdViewAd];
-}
-
-- (void)vrtBannerDidPresentModal:(nonnull VRTBanner *)vrtBanner ofType:(VRTModalType)modalType {
-    VRTLogWhereAmI();
-    [self.bannerDelegate didExpandAdViewAd];
-}
-
-- (void)vrtBannerVideoCompleted:(nonnull VRTBanner *)vrtBanner {
-    VRTLogWhereAmI();
-    // No Analog
-}
-
-- (void)vrtBannerVideoStarted:(nonnull VRTBanner *)vrtBanner {
-    VRTLogWhereAmI();
-    // No Analog
-}
-
-- (void)vrtBannerWillDismissModal:(nonnull VRTBanner *)vrtBanner ofType:(VRTModalType)modalType {
-    VRTLogWhereAmI();
-    // No Analog
-}
-
-- (void)vrtBannerWillPresentModal:(nonnull VRTBanner *)vrtBanner ofType:(VRTModalType)modalType {
-    VRTLogWhereAmI();
-    // No Analog
-}
-
-- (nonnull UIViewController *)vrtViewControllerForModalPresentation {
-    return [ALUtils topViewControllerFromKeyWindow];
-}
 
 
 
