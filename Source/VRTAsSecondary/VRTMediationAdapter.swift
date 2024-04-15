@@ -141,6 +141,7 @@ extension VRTMediationAdapter: VRTBannerDelegate {
     public func vrtBannerAdLoaded(_ vrtBanner: VRTBanner, withAdSize adSize: CGSize) {
         VRTLogInfo()
         maAdViewAdapterDelegate?.didLoadAd(forAdView: vrtBanner)
+        maAdViewAdapterDelegate?.didDisplayAdViewAd()
     }
     
     public func vrtBannerAdWillLeaveApplication(_ vrtBanner: VRTBanner) {
