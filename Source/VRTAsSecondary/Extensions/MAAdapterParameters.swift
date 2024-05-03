@@ -23,16 +23,3 @@ extension MAAdapterParameters {
         """
     }
 }
-
-/*
-@property (nonatomic, assign, readonly, getter=isTesting) BOOL testing;
-@property (nonatomic, copy, readonly) NSString *adUnitIdentifier;
-@property (nonatomic, copy, readonly, nullable) NSString *consentString;
-@property (nonatomic, strong, readonly) NSDictionary<NSString *, id> *customParameters;
-@property (nonatomic, strong, readonly) NSDictionary<NSString *, id> *localExtraParameters;
-@property (nonatomic, strong, readonly) NSDictionary<NSString *, id> *serverParameters;
-@property (nonatomic, strong, readonly, nullable, getter=hasUserConsent) NSNumber *userConsent;
-@property (nonatomic, strong, readonly, nullable, getter=isAgeRestrictedUser) NSNumber *ageRestrictedUser;
-@property (nonatomic, strong, readonly, nullable, getter=isDoNotSell) NSNumber *doNotSell;
-@property (nonatomic, weak, readonly, nullable) UIViewController *presentingViewController;
-*/

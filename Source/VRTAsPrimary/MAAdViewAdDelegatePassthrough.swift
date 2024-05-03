@@ -9,39 +9,39 @@ import AppLovinSDK
 import VrtcalSDK
 
 class MAAdViewAdDelegatePassthrough: NSObject, MAAdViewAdDelegate {
-    
+
     public weak var customEventLoadDelegate: VRTCustomEventLoadDelegate?
     public weak var customEventShowDelegate: VRTCustomEventShowDelegate?
+    
+    func didLoad(_ ad: MAAd) {
+        VRTLogInfo()
+        customEventLoadDelegate?.customEventLoaded()
+    }
+    
+    func didFailToLoadAd(forAdUnitIdentifier adUnitIdentifier: String, withError error: MAError) {
+        VRTLogInfo()
+        let vrtError = VRTError(vrtErrorCode: .customEvent, message: error.message)
+        customEventLoadDelegate?.customEventFailedToLoad(vrtError: vrtError)
+    }
+    
+    func didDisplay(_ ad: MAAd) {
+        VRTLogInfo()
+        customEventShowDelegate?.customEventShown()
+    }
+    
+    func didFail(toDisplay ad: MAAd, withError error: MAError) {
+        // No Analog
+        VRTLogInfo()
+    }
     
     func didClick(_ ad: MAAd) {
         VRTLogInfo()
         customEventShowDelegate?.customEventClicked()
     }
 
-    func didDisplay(_ ad: MAAd) {
+    func didExpand(_ ad: MAAd) {
         VRTLogInfo()
-        customEventShowDelegate?.customEventShown()
-    }
-
-    func didFail(toDisplay ad: MAAd, withError error: MAError) {
-        // No Analog
-        VRTLogInfo()
-    }
-
-    func didFailToLoadAd(forAdUnitIdentifier adUnitIdentifier: String, withError error: MAError) {
-        VRTLogInfo()
-        let vrtError = VRTError(vrtErrorCode: .customEvent, message: error.message)
-        customEventLoadDelegate?.customEventFailedToLoad(vrtError: vrtError)
-    }
-
-    func didHide(_ ad: MAAd) {
-        VRTLogInfo()
-        customEventShowDelegate?.customEventDidDismissModal(.unknown)
-    }
-
-    func didLoad(_ ad: MAAd) {
-        VRTLogInfo()
-        customEventLoadDelegate?.customEventLoaded()
+        customEventShowDelegate?.customEventDidPresentModal(.unknown)
     }
 
     func didCollapse(_ ad: MAAd) {
@@ -49,8 +49,8 @@ class MAAdViewAdDelegatePassthrough: NSObject, MAAdViewAdDelegate {
         customEventShowDelegate?.customEventDidDismissModal(.unknown)
     }
 
-    func didExpand(_ ad: MAAd) {
+    func didHide(_ ad: MAAd) {
         VRTLogInfo()
-        customEventShowDelegate?.customEventDidPresentModal(.unknown)
+        customEventShowDelegate?.customEventDidDismissModal(.unknown)
     }
 }
