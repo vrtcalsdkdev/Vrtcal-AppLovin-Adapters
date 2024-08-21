@@ -12,23 +12,25 @@ class VRTInterstitialCustomEventAppLovin: VRTAbstractInterstitialCustomEvent {
         VRTLogInfo()
         
         
-        let dict = customEventConfig.thirdPartyCustomEventData
-        guard let maAdUnitId = dict["adUnitId"] as? String else {
-            customEventLoadDelegate?.customEventFailedToLoad(
-                vrtError: VRTError(
-                    vrtErrorCode: .customEvent,
-                    message: "Unable to extract adUnitId: \(dict)"
-                )
-            )
-            return
+        VRTAsPrimaryManager.singleton.initializeThirdParty(
+            customEventConfig: customEventConfig
+        ) { result in
+            
+            // Get the adUnitIdentifier or fail
+            guard let maAdUnitId = self.customEventConfig.thirdPartyCustomEventDataValueOrFailToLoad(
+                thirdPartyCustomEventKey: .adUnitId,
+                customEventLoadDelegate: self.customEventLoadDelegate
+            ) else {
+                return
+            }
+            
+            self.maIntersatitialAd = MAInterstitialAd(adUnitIdentifier: maAdUnitId)
+            
+            self.maadDelegatePassthrough.customEventLoadDelegate = self.customEventLoadDelegate
+            
+            self.maIntersatitialAd?.delegate = self.maadDelegatePassthrough
+            self.maIntersatitialAd?.load()
         }
-        
-        maIntersatitialAd = MAInterstitialAd(adUnitIdentifier: maAdUnitId)
-        
-        maadDelegatePassthrough.customEventLoadDelegate = customEventLoadDelegate
-        
-        maIntersatitialAd?.delegate = maadDelegatePassthrough
-        maIntersatitialAd?.load()
     }
 
     override func showInterstitialAd() {
